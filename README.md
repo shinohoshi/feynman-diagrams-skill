@@ -86,3 +86,17 @@ This skill is designed to work alongside:
 - [FeynCalc Manual](https://feyncalc.github.io/FeynCalcBook/)
 - [FeynArts Documentation](https://feynarts.de/)
 - [CosmoTransitions](https://github.com/clwainwright/CosmoTransitions)
+
+## Citation
+
+If you use this skill in research, please cite the underlying tools:
+
+**FeynCalc:**
+- V. Shtabovenko, R. Mertig, F. Orellana, *FeynCalc 10: Do multiloop integrals dream of computer codes?*, [arXiv:2312.14089](https://arxiv.org/abs/2312.14089)
+- R. Mertig, M. Bohm, A. Denner, *Feyn Calc — Computer-algebraic calculation of Feynman amplitudes*, Comput. Phys. Commun. 64 (1991) 345
+
+**FeynArts:**
+- T. Hahn, *Generating Feynman diagrams and amplitudes with FeynArts 3*, Comput. Phys. Commun. 140 (2001) 418, [hep-ph/0012260](https://arxiv.org/abs/hep-ph/0012260)
+
+**CosmoTransitions** (companion phase transition skill):
+- C.L. Wainwright, *CosmoTransitions: Computing cosmological phase transition temperatures and bubble profiles*, Comput. Phys. Commun. 183 (2012) 2006, [arXiv:1109.4189](https://arxiv.org/abs/1109.4189)
