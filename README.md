@@ -75,17 +75,10 @@ Get["C:/Users/<name>/AppData/Roaming/Mathematica/Applications/FeynCalc/FeynArts/
 - **StyleBox in TextData** — use `StyleBox["text", Bold]` for bold in analysis cells; `Style[]` silently breaks Export
 - **One concept per cell** — data preparation, Paint rendering, and computation are separate cells for clean step-by-step evaluation
 
-## Related Skills
-
-This skill is designed to work alongside:
-- **Cosmo Phase Transition** — cosmological phase transition calculations using CosmoTransitions
-- Both are part of the [Claude Physics Skills](https://github.com/shinohoshi) suite for theoretical physics research
-
 ## References
 
 - [FeynCalc Manual](https://feyncalc.github.io/FeynCalcBook/)
 - [FeynArts Documentation](https://feynarts.de/)
-- [CosmoTransitions](https://github.com/clwainwright/CosmoTransitions)
 
 ## Citation
 
@@ -97,6 +90,3 @@ If you use this skill in research, please cite the underlying tools:
 
 **FeynArts:**
 - T. Hahn, *Generating Feynman diagrams and amplitudes with FeynArts 3*, Comput. Phys. Commun. 140 (2001) 418, [hep-ph/0012260](https://arxiv.org/abs/hep-ph/0012260)
-
-**CosmoTransitions** (companion phase transition skill):
-- C.L. Wainwright, *CosmoTransitions: Computing cosmological phase transition temperatures and bubble profiles*, Comput. Phys. Commun. 183 (2012) 2006, [arXiv:1109.4189](https://arxiv.org/abs/1109.4189)
