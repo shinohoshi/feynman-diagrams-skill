@@ -106,7 +106,8 @@ Same Paint rule applies. Key differences from tree:
 - `CreateTopologies[1, ...]` for 1-loop
 - `ChangeDimension -> D` for dimensional regularization
 - `LoopMomenta -> {q}` in FCFAConvert
-- After extraction: `FCLoopFindTopologies` → `FCLoopTensorReduce` → scalar integrals
+- After extraction: `TID[..., ToPaVe -> True]` → A0/B0/C0/D0 master integrals
+- Alternative (only when every topology has a complete propagator basis): `FCLoopFindTopologies` → `FCLoopTensorReduce` → `GLI[]`
 
 ```mathematica
 (* DATA cell: generate 1-loop diagrams *)
@@ -128,7 +129,7 @@ Paint[sample, ColumnsXRows -> {4, Ceiling[Length[sample]/4]},
 ```
 
 ```mathematica
-(* REDUCE cell: amplitude + tensor reduction *)
+(* REDUCE cell: amplitude + Passarino-Veltman reduction *)
 amps = FCFAConvert[CreateFeynAmp[diags, PreFactor -> 1],
   IncomingMomenta -> {p1, p2}, OutgoingMomenta -> {k1, k2},
   LoopMomenta -> {q}, UndoChiralSplittings -> True,
@@ -136,16 +137,18 @@ amps = FCFAConvert[CreateFeynAmp[diags, PreFactor -> 1],
   (* FeynArts uses the opposite sign for the electric charge; align with FeynCalc's SMP["e"] *)
   FinalSubstitutions -> {SMP["e"] -> -SMP["e"]}];
 
-{ampTopo, topos} = FCLoopFindTopologies[Total[amps], {q}];
-Print["Topologies: ", Length[topos]];
-Do[Print[topos[[i]]], {i, Length[topos]}];
+(* Optional: keep only pure QED terms (drop W/Z/Higgs loops):
+   ampQED = SelectFree[Total[amps], SMP["m_W"], SMP["m_Z"], SMP["m_H"]]; *)
 
-ampMapped = FCLoopApplyTopologyMappings[ampTopo, topos];
-ampScalar = FCLoopTensorReduce[ampMapped, {q}, topos];
-Print["Reduced to scalar integrals:"];
-Print[ampScalar // Short];
+(* TID performs the tensor (Passarino-Veltman) decomposition; ToPaVe -> True *)
+(* converts the result to A0/B0/C0/D0 master integrals. This is the robust   *)
+(* route for 1-loop processes. FCLoopFindTopologies/FCLoopTensorReduce       *)
+(* fails with "incomplete propagator basis" on vacuum-polarization-like      *)
+(* topologies (e.g. 2-propagator bubbles in ee -> mu mu).                    *)
+red = TID[Total[amps], q, ToPaVe -> True];
+Print["Reduced to scalar integrals (terms: ", If[Head[red] === Plus, Length[red], 1], ")"];
 
-basis = Cases[ampScalar, GLI[__], Infinity] // Union;
+basis = Cases[red, (A0 | B0 | C0 | D0)[__], Infinity] // Union;
 Print["Scalar integral basis: ", basis]
 ```
 
@@ -175,8 +178,10 @@ Models: `"SM"`, `"SMQCD"`, `"SMEW"`, `"MSSM"`, `"MSSMCT"`.
 ## Loop toolchain
 
 ```
-FeynArts → FCFAConvert → FCLoopFindTopologies → FCLoopTensorReduce → scalar integrals (GLI[])
+FeynArts → FCFAConvert → TID[..., ToPaVe -> True] → scalar integrals (A0, B0, C0, D0)
 ```
+
+Alternative for complete topologies only: `FCLoopFindTopologies` → `FCLoopTensorReduce` → `GLI[]`.
 
 For **numerical 1-loop**: `<<FeynHelpers` → `PaXEvaluate[]` (Package-X bridge).  
 For **multi-loop IBP**: FeynHelpers → `FIREBurn[]` / `KiraReduce[]` → `PSDIntegrate[]` (pySecDec).
@@ -191,6 +196,7 @@ For **multi-loop IBP**: FeynHelpers → `FIREBurn[]` / `KiraReduce[]` → `PSDIn
 | `Style[]` inside `TextData` | Use `StyleBox["text", Bold]` — `Style[]` silently breaks Export |
 | Mixing unrelated operations in one cell | One concept per cell: data preparation, Paint, and computation each in their own cell |
 | Forgetting `LoopMomenta -> {q}` or `ChangeDimension -> D` at 1-loop | Include both options in `FCFAConvert` |
+| `FCLoopTensorReduce` aborting with "incomplete propagator basis" | Use `TID[..., ToPaVe -> True]` for 1-loop reduction (see REDUCE cell) |
 | FeynArts not loading after `<<FeynCalc` (v10.1.0) | Apply the `init.m` fix once (see above) |
 | Painting too many diagrams at once | Take a sample of at most 24 diagrams to keep the layout readable |
 

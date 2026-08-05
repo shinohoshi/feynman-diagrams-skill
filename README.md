@@ -33,14 +33,15 @@ FeynArts                FeynCalc                  FeynHelpers (optional)
 CreateTopologies   →   FCFAConvert            →   PaXEvaluate (Package-X)
 InsertFields       →   FermionSpinSum         →   FIREBurn / KiraReduce
 CreateFeynAmp      →   DiracSimplify          →   PSDIntegrate (pySecDec)
-Paint (diagrams)   →   FCLoopFindTopologies   →   QGCreateAmp (QGRAF)
+Paint (diagrams)   →   TID (ToPaVe)           →   QGCreateAmp (QGRAF)
+                        FCLoopFindTopologies
                         FCLoopTensorReduce
                         SetMandelstam
                         Integrate (cross section)
 ```
 
 **Tree level:** diagrams → amplitudes → |M|² → dσ/dΩ → σ_total  
-**1-loop:** diagrams (D-dim) → topology identification → PV tensor reduction → scalar master integrals (A₀, B₀, C₀, D₀) → numerical evaluation
+**1-loop:** diagrams (D-dim) → PV tensor reduction via `TID[..., ToPaVe -> True]` → scalar master integrals (A₀, B₀, C₀, D₀) → numerical evaluation
 
 ## Notebook Output
 
