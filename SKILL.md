@@ -1,9 +1,25 @@
 ---
-name: Feynman Diagrams
-description: Generate, compute, and draw Feynman diagrams for particle physics using FeynArts + FeynCalc (Mathematica). Handles tree level and multi-loop calculations. Use when the user asks to draw Feynman diagrams, compute scattering amplitudes (tree or loop), calculate cross sections or decay widths, or mentions 费曼图, Feynman diagram, scattering, cross section, amplitude, loop, 圈图, 单圈, FeynCalc, FeynArts. Trigger when the user specifies particle processes like "e+ e- -> mu+ mu-", "gg -> h" (loop), or wants diagrams for a paper/thesis.
+name: feynman-diagrams
+description: Use when asked to draw Feynman diagrams, compute scattering amplitudes (tree, 1-loop, or multi-loop), or calculate cross sections or decay widths for particle physics. Triggers include Feynman diagrams, 费曼图, scattering, cross section, amplitude, loop, 圈图, 单圈, FeynCalc, FeynArts, or processes such as "e+ e- -> mu+ mu-", "gg -> h" (loop). Requires FeynArts + FeynCalc on Mathematica.
 ---
 
 # Feynman Diagrams — FeynArts + FeynCalc
+
+## When to Use
+
+Use this skill when the task involves:
+
+- Drawing Feynman diagrams for papers, theses, or talks
+- Computing amplitudes, cross sections, or decay widths (tree, 1-loop, multi-loop)
+- Setting up FeynArts/FeynCalc workflows in Mathematica, including generating evaluatable `.nb` notebooks
+
+**Not for:** deriving QFT formalism by hand without diagrams, or numerical lattice/phenomenology codes that do not use FeynArts + FeynCalc.
+
+## Prerequisites
+
+- Mathematica 12+ (with `wolframscript` for `.nb` generation)
+- FeynCalc and FeynArts installed (see [README.md](README.md) for install commands)
+- For FeynCalc 10.1.0: apply the FeynArts auto-load fix below once
 
 ## CRITICAL: How to generate a working .nb
 
@@ -117,6 +133,7 @@ amps = FCFAConvert[CreateFeynAmp[diags, PreFactor -> 1],
   IncomingMomenta -> {p1, p2}, OutgoingMomenta -> {k1, k2},
   LoopMomenta -> {q}, UndoChiralSplittings -> True,
   ChangeDimension -> D, SMP -> True, Contract -> True,
+  (* FeynArts uses the opposite sign for the electric charge; align with FeynCalc's SMP["e"] *)
   FinalSubstitutions -> {SMP["e"] -> -SMP["e"]}];
 
 {ampTopo, topos} = FCLoopFindTopologies[Total[amps], {q}];
@@ -145,8 +162,8 @@ Replace the path with the actual FeynCalc installation path. After this, `<<Feyn
 
 ## Particle names (FeynArts convention)
 
-| Particle | FeynArts | | Particle | FeynArts |
-|---|---|---|---|---|
+| Particle | FeynArts | Particle | FeynArts |
+|---|---|---|---|
 | e-, mu-, ta- | `F[2, {1}]`, `{2}`, `{3}` | photon | `V[1]` |
 | positron, etc. | `-F[2, {1}]` | Z | `V[2]` |
 | neutrinos | `F[1, {1..3}]` | W+ / W- | `V[3]` / `-V[3]` |
@@ -164,6 +181,19 @@ FeynArts → FCFAConvert → FCLoopFindTopologies → FCLoopTensorReduce → sca
 For **numerical 1-loop**: `<<FeynHelpers` → `PaXEvaluate[]` (Package-X bridge).  
 For **multi-loop IBP**: FeynHelpers → `FIREBurn[]` / `KiraReduce[]` → `PSDIntegrate[]` (pySecDec).
 
+## Common mistakes
+
+| Mistake | Fix |
+|---|---|
+| Trailing `;` after `Paint[...]` | Put `Paint` alone in its own cell with no semicolon, otherwise the diagrams are not rendered |
+| Writing `.nb` as raw expression files | Always generate notebooks via `wolframscript` + `Export["file.nb", ...]` |
+| Chinese text inside `wolframscript -code` | Use Method B: write a `.wls` file and run `wolframscript -f` |
+| `Style[]` inside `TextData` | Use `StyleBox["text", Bold]` — `Style[]` silently breaks Export |
+| Mixing unrelated operations in one cell | One concept per cell: data preparation, Paint, and computation each in their own cell |
+| Forgetting `LoopMomenta -> {q}` or `ChangeDimension -> D` at 1-loop | Include both options in `FCFAConvert` |
+| FeynArts not loading after `<<FeynCalc` (v10.1.0) | Apply the `init.m` fix once (see above) |
+| Painting too many diagrams at once | Take a sample of at most 24 diagrams to keep the layout readable |
+
 ## Common processes
 
 ```mathematica
@@ -176,3 +206,7 @@ For **multi-loop IBP**: FeynHelpers → `FIREBurn[]` / `KiraReduce[]` → `PSDIn
 (* gg->H (loop) *) {V[5],V[5]} -> {S[1]}           (* CreateTopologies[1,...] *)
 (* H->gaga (lp) *) {S[1]} -> {V[1],V[1]}           (* CreateTopologies[1,...] *)
 ```
+
+## Reference
+
+For full physics coverage, notebook structure, and tool citations, see [README.md](README.md) in this repository.

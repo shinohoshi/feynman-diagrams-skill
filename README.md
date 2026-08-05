@@ -1,6 +1,6 @@
 # Feynman Diagrams Skill for Claude Code
 
-Generates, computes, and analyzes Feynman diagrams for particle physics using **FeynArts + FeynCalc** on Mathematica. Handles tree-level, 1-loop, and multi-loop calculations across QED, QCD, and electroweak interactions.
+Generates, computes, and analyzes Feynman diagrams for particle physics using **FeynArts + FeynCalc** on Mathematica. Covers tree-level and 1-loop calculations, with a multi-loop reduction toolchain (FeynHelpers: FIRE/Kira + pySecDec), across QED, QCD, and electroweak interactions.
 
 ## Quick Start
 
@@ -19,7 +19,9 @@ Generates, computes, and analyzes Feynman diagrams for particle physics using **
 | **Higgs** | e+e- → ZH (Higgsstrahlung), gg → H (top loop), H → γγ, H → ZZ\*, H → WW\* |
 | **QCD** | gg → tt̄, qq̄ → tt̄, gg → gg, qq̄ → gg, gg → jets |
 | **Electroweak (full)** | Any SM 2→2 process with γ, W, Z exchange + interference |
-| **Loop-only** | gg → H, H → γγ, gg → ZH, γγ → WW (all zero at tree level in SM) |
+| **Loop-only** | gg → H, H → γγ, gg → ZH (zero at tree level in SM) |
+
+Note: γγ → W+W− is a **tree-level** process in the SM (via the WWγ triple-gauge and γγWW quartic couplings), so it is not listed as loop-only; it is often studied at photon colliders for its sensitivity to W-boson self-interactions.
 
 **Models:** Standard Model (`SM`, `SMQCD`, `SMEW`), MSSM (`MSSM`, `MSSMCT`), and **custom UFO models** for BSM physics (e.g., extended Higgs sectors for phase transition studies).
 
