@@ -83,6 +83,13 @@ Get["C:/Users/<name>/AppData/Roaming/Mathematica/Applications/FeynCalc/FeynArts/
 - [FeynCalc Manual](https://feyncalc.github.io/FeynCalcBook/)
 - [FeynArts Documentation](https://feynarts.de/)
 
+## Verified test
+
+Tested with Mathematica 14.0 + FeynCalc 10.2.1 + FeynArts 3.12 (Windows): e+ e- -> mu+ mu-
+tree-level sigma_total = e^4/(12 Pi s) = 4 Pi alpha^2/(3 s) = 868.54 pb at sqrt(s) = 10 GeV;
+1-loop QED: 5 diagram classes -> 9 amplitudes -> TID reduction to 27 master integrals
+{A0, B0, C0, D0}. See SKILL.md "Verified test case" for the Windows/CLI lessons.
+
 ## Citation
 
 If you use this skill in research, please cite the underlying tools:

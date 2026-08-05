@@ -106,6 +106,7 @@ Same Paint rule applies. Key differences from tree:
 - `CreateTopologies[1, ...]` for 1-loop
 - `ChangeDimension -> D` for dimensional regularization
 - `LoopMomenta -> {q}` in FCFAConvert
+- Silence FeynArts progress chatter with `$FAVerbose = 0;` after loading FeynCalc
 - After extraction: `TID[..., ToPaVe -> True]` → A0/B0/C0/D0 master integrals
 - Alternative (only when every topology has a complete propagator basis): `FCLoopFindTopologies` → `FCLoopTensorReduce` → `GLI[]`
 
@@ -196,9 +197,44 @@ For **multi-loop IBP**: FeynHelpers → `FIREBurn[]` / `KiraReduce[]` → `PSDIn
 | `Style[]` inside `TextData` | Use `StyleBox["text", Bold]` — `Style[]` silently breaks Export |
 | Mixing unrelated operations in one cell | One concept per cell: data preparation, Paint, and computation each in their own cell |
 | Forgetting `LoopMomenta -> {q}` or `ChangeDimension -> D` at 1-loop | Include both options in `FCFAConvert` |
+| A wall of `> Top. N: ... Classes insertions` messages after `InsertFields` | Not an error — set `$FAVerbose = 0;` after loading FeynCalc to silence the progress chatter |
+| `FermionSpinSum` aborting with "Detected commutative multiplication of noncommutative objects" | Observed in FeynCalc 10.2.1 + FeynArts 3.12; compute \|M\|^2 with DiracTrace lepton tensors instead (see Verified test case) |
 | `FCLoopTensorReduce` aborting with "incomplete propagator basis" | Use `TID[..., ToPaVe -> True]` for 1-loop reduction (see REDUCE cell) |
 | FeynArts not loading after `<<FeynCalc` (v10.1.0) | Apply the `init.m` fix once (see above) |
 | Painting too many diagrams at once | Take a sample of at most 24 diagrams to keep the layout readable |
+
+## Verified test case
+
+Tested on Mathematica 14.0 (Windows, Chinese locale) with FeynCalc 10.2.1 + FeynArts 3.12 (patched for FeynCalc).
+
+**Process: e+ e- -> mu+ mu- (QED)**
+
+- Tree level: spin-averaged |M|^2 = 2 e^4 (t^2 + u^2)/s^2, sigma_total = e^4/(12 Pi s) = 4 Pi alpha^2/(3 s).
+  Numerically at sqrt(s) = 10 GeV (alpha = 1/137.036): sigma = 868.54 pb.
+- 1-loop QED (keep only photon + charged leptons): 5 diagram classes → 9 amplitudes;
+  `TID[..., ToPaVe -> True]` → 27 terms, 27 distinct master integrals with heads {A0, B0, C0, D0}.
+
+**Windows / command-line lessons**
+
+- Run scripts with the installed kernel `math.exe -noprompt -script file.wls`. On some installs
+  `WolframKernel.exe -script` silently produces no output and the standalone `wolframscript`
+  reports "No valid password found".
+- `math.exe -script` on a Chinese-locale Windows reads ANSI (GBK) source: write `.wls` files in
+  GBK or keep scripts ASCII-only. Notebooks accept Unicode via `Export` (stored as `\:xxxx`
+  escapes and rendered correctly in the front end).
+- Set `$FAVerbose = 0;` after loading FeynCalc to silence the `> Top. N: ... Classes insertions`
+  progress chatter (normal output, not errors).
+- `FermionSpinSum` can abort with "Detected commutative multiplication of noncommutative objects"
+  (FeynCalc 10.2.1 + FeynArts 3.12). Workaround: build |M|^2 from DiracTrace lepton tensors,
+  e.g. `(1/4) SMP["e"]^4/s^2 * Contract[L1 * L2]` with
+  `L1 = DiracTrace[(GS[p1]+SMP["m_e"]).DiracGamma[mu].(GS[p2]-SMP["m_e"]).DiracGamma[nu]] // DiracSimplify`
+  and L2 analogously for the muon pair.
+- For 1-loop reduction use `TID[..., ToPaVe -> True]` (→ A0/B0/C0/D0); the
+  `FCLoopFindTopologies`/`FCLoopTensorReduce` chain requires complete propagator bases and fails
+  on vacuum-polarization-like topologies.
+- Build notebooks programmatically: evaluate the computation in the kernel, construct
+  `Notebook[{Cell[...]}]`, then `Export["demo.nb", nb]`. `Paint[]` renders the diagrams when the
+  cell is evaluated in the front end (no trailing semicolon).
 
 ## Common processes
 
